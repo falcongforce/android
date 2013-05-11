@@ -36,7 +36,7 @@ public class MainActivity extends Activity implements OnClickListener{
         webView = (WebView) findViewById(R.id.webview);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setUseWideViewPort(true);
+        webView.getSettings().setUseWideViewPort(true); 
 
        
        
