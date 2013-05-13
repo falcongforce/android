@@ -194,7 +194,7 @@ public class MainActivity extends Activity implements OnClickListener{
 			loading.setVisibility(ProgressBar.VISIBLE);
 			refresh.setVisibility(Button.GONE);
 			super.onPageStarted(view, url, icon);
-		} 
+		}
 		@Override
 		public void onPageFinished(WebView view, String url) {
 			loading.setVisibility(ProgressBar.GONE);
