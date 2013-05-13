@@ -30,7 +30,7 @@ import android.widget.TextView.OnEditorActionListener;
 
 public class MainActivity extends Activity implements OnClickListener{
 	
-	private WebView webView;
+	private WebView webView; 
 	EditText addressBar;
 	ImageView favicon;
 	Button refresh;
