@@ -53,6 +53,14 @@
 
             </EditText>
 
+            <ProgressBar
+                android:id="@+id/loading"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:visibility="gone" />
+
             <Button
                 android:id="@+id/brefresh"
                 android:layout_width="20dp"
