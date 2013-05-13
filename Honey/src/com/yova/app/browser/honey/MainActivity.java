@@ -188,7 +188,7 @@ public class MainActivity extends Activity implements OnClickListener{
 			return true;
 		}
 
-		@Override
+		@Override 
 		public void onPageStarted(WebView view, String url, Bitmap icon) {
 			addressBar.setText(url);
 			loading.setVisibility(ProgressBar.VISIBLE);
