@@ -12,28 +12,22 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.URLUtil;
-import android.webkit.WebChromeClient;
 import android.webkit.WebIconDatabase;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-
+//https://github.com/TheFinestArtist/SimpleWebViewFragment
 public class MainActivity extends Activity implements OnClickListener {
 
 	private MainWebView webView;
 	EditText addressBar;
 	ImageView favicon;
-	Button refresh;
+	
 	ProgressBar loading;
 
-	int originalOrientation;
-	FrameLayout fullScreenContainer;
-	WebChromeClient.CustomViewCallback customViewCallback;
-	View customView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +43,8 @@ public class MainActivity extends Activity implements OnClickListener {
 		Button go = (Button) findViewById(R.id.bgo);
 		Button back = (Button) findViewById(R.id.bback);
 		Button forward = (Button) findViewById(R.id.bforward);
-		refresh = (Button) findViewById(R.id.brefresh);
+		Button refresh = (Button) findViewById(R.id.brefresh);
+		
 		loading = (ProgressBar) findViewById(R.id.loading);
 
 		webView.addressBar = addressBar;
