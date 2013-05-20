@@ -11,12 +11,12 @@ import android.support.v4.app.FragmentPagerAdapter;
  */
 public class PagerAdapter extends FragmentPagerAdapter {
  
-    private List<Tab> fragments;
+    private List<WebTab> fragments;
     /**
      * @param fm
      * @param fragments
      */
-    public PagerAdapter(FragmentManager fm, List<Tab> fragments) {
+    public PagerAdapter(FragmentManager fm, List<WebTab> fragments) {
         super(fm);
         this.fragments = fragments;
     }
@@ -24,7 +24,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
      * @see android.support.v4.app.FragmentPagerAdapter#getItem(int)
      */
     @Override
-    public Tab getItem(int position) {
+    public WebTab getItem(int position) {
         return this.fragments.get(position);
     }
  
@@ -35,7 +35,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
     public int getCount() {
         return this.fragments.size();
     }
-    public void addItem(Tab tab){
+    public void addItem(WebTab tab){
     	fragments.add(tab);
     }
 }

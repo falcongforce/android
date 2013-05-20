@@ -3,7 +3,6 @@ package com.yova.app.browser.honey;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,28 +76,28 @@ public class MainWebView extends WebView{
 	class MainWebViewClient extends WebViewClient{
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String address) {
-			addressBar.setText(address);
+//			addressBar.setText(address);
 			view.loadUrl(address);
 			return true;
 		}
 
 		@Override
 		public void onPageStarted(WebView view, String url, Bitmap icon) {
-			addressBar.setText(url);
-			loading.setVisibility(ProgressBar.VISIBLE);
-			refresh.setVisibility(Button.GONE);
+//			addressBar.setText(url);
+//			loading.setVisibility(ProgressBar.VISIBLE);
+//			refresh.setVisibility(Button.GONE);
 			super.onPageStarted(view, url, icon);
 		}
 		@Override
 		public void onPageFinished(WebView view, String url) {
-			loading.setVisibility(ProgressBar.GONE);
-			refresh.setVisibility(Button.VISIBLE);
-			if(view.getFavicon() != null){
-				favicon.setImageBitmap(view.getFavicon());
-			} else{
-				Drawable dw = getResources().getDrawable(R.drawable.honey);
-				favicon.setImageDrawable(dw);
-			}
+//			loading.setVisibility(ProgressBar.GONE);
+//			refresh.setVisibility(Button.VISIBLE);
+//			if(view.getFavicon() != null){
+//				favicon.setImageBitmap(view.getFavicon());
+//			} else{
+//				Drawable dw = getResources().getDrawable(R.drawable.honey);
+//				favicon.setImageDrawable(dw);
+//			}
 			super.onPageFinished(view, url);
 		}
 		
