@@ -1,9 +1,12 @@
 package com.yova.app.browser.honey;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
+import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -13,29 +16,36 @@ import android.widget.TextView;
  
 
  
-/**
- * The <code>TabsViewPagerFragmentActivity</code> class implements the Fragment activity that maintains a TabHost using a ViewPager.
- * @author mwho
- */
-public class MasterActivity extends FragmentActivity  {
+
+public class MasterActivity extends FragmentActivity  implements OnClickListener, TabHost.OnTabChangeListener{
  
     private FragmentTabHost mTabHost;
-    
+    private MainWebView webView;
 	EditText addressBar;
 	ImageView favicon;
-	Button refresh;
 	ProgressBar loading;
 	String defaultUrl = "https://www.google.com/";
 	public static final String EXTRA_URL = "url";
 	
-	
+	//web navigation
+	Button go;
+	Button back;
+	Button forward;
+	Button refresh;
+	Button addNewTab;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tab_host);
-        
+        //setup buttons
+		go = (Button) findViewById(R.id.bgo);
+		back = (Button) findViewById(R.id.bback);
+		forward = (Button) findViewById(R.id.bforward);
+		refresh = (Button) findViewById(R.id.brefresh);
+		
         // Initialise the TabHost
         mTabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
         mTabHost.setup(this, super.getSupportFragmentManager(), android.R.id.tabcontent);
+        mTabHost.setOnTabChangedListener(this);
         
         mTabHost.setCurrentTab(-2);
         WebTab tab = new WebTab();
@@ -83,22 +93,78 @@ public class MasterActivity extends FragmentActivity  {
     	mTabHost.addTab(tabSpec, WebTab.class, newTab.getArguments());
     }
  
-    public void onTabChanged(String tag) {
-        //TabInfo newTab = this.mapTabInfo.get(tag);
-//        int pos = this.mTabHost.getCurrentTab();
-//
-//        
-//		FragmentManager manager = getSupportFragmentManager();
-//		FragmentTransaction ft = manager.beginTransaction();
-//		currentTab = mPagerAdapter.getItem(pos);
-//		ft.replace(android.R.id.tabcontent, currentTab);
-//		ft.commit();
-    }
+	@Override
+	public void onTabChanged(String tabId) {
+		
+	}
 	public View createTabView(String text) {
 		View view = LayoutInflater.from(this).inflate(R.layout.tabs_icon, null);
 		TextView tv = (TextView) view.findViewById(R.id.tab_text);
 		tv.setText(text);
 		return view;
+	}
+	@Override
+	public void onClick(View view) {
+		switch (view.getId()) {
+		case R.id.bgo:
+
+			if (addressBar != null
+					&& !addressBar.getText().toString().equals("")) {
+				String url = this.addressBar.getText().toString();
+
+				if (url != null && url.equalsIgnoreCase(webView.getUrl())) {
+					webView.reload();
+				} else if (URLUtil.isValidUrl(url)) {
+
+					webView.loadUrl(url);
+				} else {
+					url = URLUtil.guessUrl(url);
+					webView.loadUrl(url);
+				}
+
+			}
+			break;
+		case R.id.bback:
+			if (webView.canGoBack()) {
+				webView.goBack();
+			}
+			break;
+		case R.id.bforward:
+			if (webView.canGoForward()) {
+				webView.goForward();
+			}
+			break;
+		case R.id.brefresh:
+			webView.reload();
+
+			break;
+
+		default:
+			break;
+		}
+		HideKeyboardClearFocus();
+	}
+	
+	@Override
+	public void onBackPressed() {
+		
+		if (webView != null && webView.isCustomView()) { 
+			webView.hideCustomView();
+			return;
+		} else if (webView.canGoBack()) {
+			webView.goBack();
+			HideKeyboardClearFocus();
+			return;
+		}
+		super.onBackPressed();
+
+	}
+	public void HideKeyboardClearFocus() {
+
+		addressBar.clearFocus();
+		// hide keyboard
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(addressBar.getWindowToken(), 0);
 	}
 	
 	public void setupWebTab() {

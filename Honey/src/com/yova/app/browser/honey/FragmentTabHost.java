@@ -24,9 +24,9 @@ import android.widget.TabHost;
  */
 public class FragmentTabHost extends TabHost implements
 		TabHost.OnTabChangeListener {
-	
+
 	private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
-	
+
 	private FrameLayout mRealTabContent;
 	private Context mContext;
 	private FragmentManager mFragmentManager;
@@ -129,12 +129,12 @@ public class FragmentTabHost extends TabHost implements
 	 *             {@link #setup(Context, FragmentManager)} or
 	 *             {@link #setup(Context, FragmentManager, int)}.
 	 */
-//	@Override
-//	@Deprecated
-//	public void setup() {
-//		throw new IllegalStateException(
-//				"Must call setup() that takes a Context and FragmentManager");
-//	}
+	// @Override
+	// @Deprecated
+	// public void setup() {
+	// throw new IllegalStateException(
+	// "Must call setup() that takes a Context and FragmentManager");
+	// }
 
 	public void setup(Context context, FragmentManager manager) {
 		super.setup();
@@ -279,7 +279,7 @@ public class FragmentTabHost extends TabHost implements
 			}
 		}
 		if (newTab == null) {
-//			throw new IllegalStateException("No tab known for tag " + tabId);
+			// throw new IllegalStateException("No tab known for tag " + tabId);
 		}
 		if (mLastTab != newTab) {
 			if (ft == null) {
@@ -303,5 +303,14 @@ public class FragmentTabHost extends TabHost implements
 			mLastTab = newTab;
 		}
 		return ft;
+	}
+
+	public MainWebView getCurrentWebView() {
+		if (mLastTab != null) {
+			MainWebView wv = ((WebTab) mLastTab.fragment).getWebview();
+			return wv;
+		} else {
+			return null;
+		}
 	}
 }

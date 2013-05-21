@@ -52,7 +52,6 @@ public class MainWebView extends WebView{
 	private void init(Context context){
 		
 		activity = (Activity) context;
-
 		
 		
         WebSettings webSettings = getSettings();
@@ -76,14 +75,14 @@ public class MainWebView extends WebView{
 	class MainWebViewClient extends WebViewClient{
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String address) {
-//			addressBar.setText(address);
+			addressBar.setText(address);
 			view.loadUrl(address);
 			return true;
 		}
 
 		@Override
 		public void onPageStarted(WebView view, String url, Bitmap icon) {
-//			addressBar.setText(url);
+			addressBar.setText(url);
 //			loading.setVisibility(ProgressBar.VISIBLE);
 //			refresh.setVisibility(Button.GONE);
 			super.onPageStarted(view, url, icon);

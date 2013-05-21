@@ -1,10 +1,12 @@
 package com.yova.app.browser.honey;
 
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 public class WebTab extends Fragment {
 	private MainWebView webView;
@@ -27,9 +29,9 @@ public class WebTab extends Fragment {
 		if (webView != null) {
 			webView.destroy();
 		}
-		
 		webView = new MainWebView(getActivity());
-
+		EditText addressBar = (EditText) getActivity().findViewById(R.id.eturl);
+		webView.addressBar = addressBar;
 		mIsWebViewAvailable = true;
 
 		if (url != null)
