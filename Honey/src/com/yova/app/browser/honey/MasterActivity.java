@@ -1,5 +1,6 @@
 package com.yova.app.browser.honey;
 import android.content.Context;
+import android.location.GpsStatus.Listener;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
@@ -17,7 +18,7 @@ import android.widget.TextView;
 
  
 
-public class MasterActivity extends FragmentActivity  implements OnClickListener, TabHost.OnTabChangeListener{
+public class MasterActivity extends FragmentActivity  implements OnClickListener, TabHost.OnTabChangeListener, WebTab.OnWebViewCreated{
  
     private FragmentTabHost mTabHost;
     private MainWebView webView;
@@ -26,7 +27,6 @@ public class MasterActivity extends FragmentActivity  implements OnClickListener
 	ProgressBar loading;
 	String defaultUrl = "https://www.google.com/";
 	public static final String EXTRA_URL = "url";
-	
 	//web navigation
 	Button go;
 	Button back;
@@ -185,5 +185,10 @@ public class MasterActivity extends FragmentActivity  implements OnClickListener
 //		back.setOnClickListener(this);
 //		forward.setOnClickListener(this);
 //		refresh.setOnClickListener(this);
+	}
+
+	@Override
+	public void onViewChanged(MainWebView mainWebView) {
+		webView = mainWebView;
 	}
 }

@@ -10,6 +10,8 @@ import android.widget.EditText;
 
 public class WebTab extends Fragment {
 	private MainWebView webView;
+	private WebTab.OnWebViewCreated onWebViewCreated;
+	
 	private boolean mIsWebViewAvailable;
 	String url;
 
@@ -34,6 +36,9 @@ public class WebTab extends Fragment {
 		webView.addressBar = addressBar;
 		mIsWebViewAvailable = true;
 
+		if (onWebViewCreated != null) {
+			onWebViewCreated.onViewChanged(webView);
+		}
 		if (url != null)
 			webView.loadUrl(url);
 		return webView;
@@ -122,4 +127,11 @@ public class WebTab extends Fragment {
 //				.getSystemService(Context.INPUT_METHOD_SERVICE);
 //		imm.hideSoftInputFromWindow(addressBar.getWindowToken(), 0);
 //	}
+	public abstract static interface OnWebViewCreated{
+		public void onViewChanged(MainWebView mainWebView);
+	}
+
+	public void setOnWebViewCreated(WebTab.OnWebViewCreated onWebViewCreated) {
+		this.onWebViewCreated = onWebViewCreated;
+	}
 }
