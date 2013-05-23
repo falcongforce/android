@@ -69,13 +69,15 @@
 
                 <EditText
                     android:id="@+id/eturl"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:background="#FFFFFFFF"
                     android:ems="10"
                     android:imeOptions="actionGo"
                     android:inputType="textUri"
                     android:paddingLeft="5dp"
+                    android:focusableInTouchMode="true" 
                     android:selectAllOnFocus="true" >
                 </EditText>
 

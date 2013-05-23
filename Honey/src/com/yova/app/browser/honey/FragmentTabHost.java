@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TabHost;
 
+import com.yova.app.browser.honey.WebTab.OnWebViewCreated;
+
 /**
  * Special TabHost that allows the use of {@link Fragment} objects for its tab
  * content. When placing this in a view hierarchy, after inflating the hierarchy
@@ -39,12 +41,14 @@ public class FragmentTabHost extends TabHost implements
 		private final String tag;
 		private final Class<?> clss;
 		private final Bundle args;
+		private final OnWebViewCreated onWebViewCreated;
 		private Fragment fragment;
 
-		TabInfo(String _tag, Class<?> _class, Bundle _args) {
+		TabInfo(String _tag, Class<?> _class, Bundle _args, OnWebViewCreated _onWebViewCreated) {
 			tag = _tag;
 			clss = _class;
 			args = _args;
+			onWebViewCreated = _onWebViewCreated;
 		}
 	}
 
@@ -124,11 +128,11 @@ public class FragmentTabHost extends TabHost implements
 		/*** findViewById(android.R.id.tabs) IS NULL EVERY TIME ***/
 	}
 
-	/**
-	 * @deprecated Don't call the original TabHost setup, you must instead call
-	 *             {@link #setup(Context, FragmentManager)} or
-	 *             {@link #setup(Context, FragmentManager, int)}.
-	 */
+//	/**
+//	 * @deprecated Don't call the original TabHost setup, you must instead call
+//	 *             {@link #setup(Context, FragmentManager)} or
+//	 *             {@link #setup(Context, FragmentManager, int)}.
+//	 */
 	// @Override
 	// @Deprecated
 	// public void setup() {
@@ -174,11 +178,11 @@ public class FragmentTabHost extends TabHost implements
 		mOnTabChangeListener = l;
 	}
 
-	public void addTab(TabHost.TabSpec tabSpec, Class<?> clss, Bundle args) {
+	public void addTab(TabHost.TabSpec tabSpec, Class<?> clss, Bundle args, OnWebViewCreated onWebViewCreated) {
 		tabSpec.setContent(new DummyTabFactory(mContext));
 		String tag = tabSpec.getTag();
 
-		TabInfo info = new TabInfo(tag, clss, args);
+		TabInfo info = new TabInfo(tag, clss, args, onWebViewCreated);
 
 		if (mAttached) {
 			// If we are already attached to the window, then check to make
@@ -294,6 +298,7 @@ public class FragmentTabHost extends TabHost implements
 				if (newTab.fragment == null) {
 					newTab.fragment = Fragment.instantiate(mContext,
 							newTab.clss.getName(), newTab.args);
+					((WebTab)newTab.fragment).setOnWebViewCreated(newTab.onWebViewCreated);
 					ft.add(mContainerId, newTab.fragment, newTab.tag);
 				} else {
 					ft.attach(newTab.fragment);
@@ -313,4 +318,6 @@ public class FragmentTabHost extends TabHost implements
 			return null;
 		}
 	}
+
+
 }

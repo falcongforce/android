@@ -6,11 +6,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 public class WebTab extends Fragment {
 	private MainWebView webView;
-	private WebTab.OnWebViewCreated onWebViewCreated;
+	WebTab.OnWebViewCreated onWebViewCreated;
 	
 	private boolean mIsWebViewAvailable;
 	String url;
@@ -33,7 +36,15 @@ public class WebTab extends Fragment {
 		}
 		webView = new MainWebView(getActivity());
 		EditText addressBar = (EditText) getActivity().findViewById(R.id.eturl);
+		ImageView favicon = (ImageView) getActivity().findViewById(R.id.favicon);
+		ProgressBar loading = (ProgressBar) getActivity().findViewById(R.id.loading);
+		Button refresh = (Button) getActivity().findViewById(R.id.brefresh);
+		
 		webView.addressBar = addressBar;
+		webView.favicon = favicon;
+		webView.loading = loading;
+		webView.refresh = refresh;
+		
 		mIsWebViewAvailable = true;
 
 		if (onWebViewCreated != null) {
@@ -41,50 +52,12 @@ public class WebTab extends Fragment {
 		}
 		if (url != null)
 			webView.loadUrl(url);
+		
+		webView.requestFocus();
 		return webView;
 	}
 
-//	@Override
-//	public void onClick(View view) {
-//		switch (view.getId()) {
-//		case R.id.bgo:
-//
-//			if (addressBar != null
-//					&& !addressBar.getText().toString().equals("")) {
-//				String url = this.addressBar.getText().toString();
-//
-//				if (url != null && url.equalsIgnoreCase(webView.getUrl())) {
-//					webView.reload();
-//				} else if (URLUtil.isValidUrl(url)) {
-//
-//					webView.loadUrl(url);
-//				} else {
-//					url = URLUtil.guessUrl(url);
-//					webView.loadUrl(url);
-//				}
-//
-//			}
-//			break;
-//		case R.id.bback:
-//			if (webView.canGoBack()) {
-//				webView.goBack();
-//			}
-//			break;
-//		case R.id.bforward:
-//			if (webView.canGoForward()) {
-//				webView.goForward();
-//			}
-//			break;
-//		case R.id.brefresh:
-//			webView.reload();
-//
-//			break;
-//
-//		default:
-//			break;
-//		}
-//		HideKeyboardClearFocus();
-//	}
+
 
 	@Override
 	public void onPause() {
@@ -119,14 +92,6 @@ public class WebTab extends Fragment {
 		super.onDestroy();
 	}
 
-//	public void HideKeyboardClearFocus() {
-//
-//		addressBar.clearFocus();
-//		// hide keyboard
-//		InputMethodManager imm = (InputMethodManager) webView.getContext()
-//				.getSystemService(Context.INPUT_METHOD_SERVICE);
-//		imm.hideSoftInputFromWindow(addressBar.getWindowToken(), 0);
-//	}
 	public abstract static interface OnWebViewCreated{
 		public void onViewChanged(MainWebView mainWebView);
 	}
