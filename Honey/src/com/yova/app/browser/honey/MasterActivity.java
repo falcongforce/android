@@ -57,33 +57,21 @@ public class MasterActivity extends FragmentActivity implements
 		mTabHost.setOnTabChangedListener(this);
 
 		mTabHost.setCurrentTab(-2);
-		WebTab tab = new WebTab();
-		tab.setOnWebViewCreated(onWebViewCreated);
 		Bundle bundle = new Bundle();
 		bundle.putString(EXTRA_URL, defaultUrl);
-		tab.setArguments(bundle);
-		addTab("First Tab", tab);
+		addTab("First Tab", bundle);
 
-		tab = new WebTab();
-		tab.setOnWebViewCreated(onWebViewCreated);
 		bundle = new Bundle();
 		bundle.putString(EXTRA_URL, defaultUrl);
-		tab.setArguments(bundle);
-		addTab("Second Tab", tab);
+		addTab("Second Tab", bundle);
 
-		tab = new WebTab();
-		tab.setOnWebViewCreated(onWebViewCreated);
 		bundle = new Bundle();
 		bundle.putString(EXTRA_URL, defaultUrl);
-		tab.setArguments(bundle);
-		addTab("Third Tab", tab);
+		addTab("Third Tab", bundle);
 
-		tab = new WebTab();
-		tab.setOnWebViewCreated(onWebViewCreated);
 		bundle = new Bundle();
 		bundle.putString(EXTRA_URL, defaultUrl);
-		tab.setArguments(bundle);
-		addTab("Fourth Tab", tab);
+		addTab("Fourth Tab", bundle);
 
 		Button addNewTab = (Button) findViewById(R.id.addNewTab);
 		addNewTab.setOnClickListener(new OnClickListener() {
@@ -101,12 +89,9 @@ public class MasterActivity extends FragmentActivity implements
 			Uri uri = null;
 			uri = intent.getData();
 
-			tab = new WebTab();
-			tab.setOnWebViewCreated(onWebViewCreated);
 			bundle = new Bundle();
 			bundle.putString(EXTRA_URL, uri.toString());
-			tab.setArguments(bundle);
-			addTab(REDIRECT, tab);
+			addTab(REDIRECT, bundle );
 
 			mTabHost.setCurrentTabByTag(REDIRECT);
 
@@ -114,12 +99,12 @@ public class MasterActivity extends FragmentActivity implements
 
 	}
 
-	private void addTab(String tag, WebTab newTab) {
+	private void addTab(String tag, Bundle bundle) {
 		// Attach a Tab view factory to the spec
 		TabHost.TabSpec tabSpec = mTabHost.newTabSpec(tag).setIndicator(
 				createTabView(tag));
 
-		mTabHost.addTab(tabSpec, WebTab.class, newTab.getArguments(),
+		mTabHost.addTab(tabSpec, WebTab.class, bundle,
 				onWebViewCreated);
 	}
 
