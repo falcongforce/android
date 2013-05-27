@@ -1,9 +1,11 @@
 package com.yova.app.browser.honey;
 
 import android.content.Intent;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +15,11 @@ import android.webkit.URLUtil;
 import android.webkit.WebIconDatabase;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TabHost;
+import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
@@ -55,32 +59,42 @@ public class MasterActivity extends FragmentActivity implements
 		mTabHost.setup(this, super.getSupportFragmentManager(),
 				android.R.id.tabcontent);
 		mTabHost.setOnTabChangedListener(this);
-
-		mTabHost.setCurrentTab(-2);
+		// mTabHost.setCurrentTab(-2);
 		Bundle bundle = new Bundle();
 		bundle.putString(EXTRA_URL, defaultUrl);
-		addTab("First Tab", bundle);
+		addTab("First Tab", String.valueOf(System.currentTimeMillis() + 1),
+				bundle);
 
 		bundle = new Bundle();
 		bundle.putString(EXTRA_URL, defaultUrl);
-		addTab("Second Tab", bundle);
-
-		bundle = new Bundle();
-		bundle.putString(EXTRA_URL, defaultUrl);
-		addTab("Third Tab", bundle);
-
-		bundle = new Bundle();
-		bundle.putString(EXTRA_URL, defaultUrl);
-		addTab("Fourth Tab", bundle);
+		addTab("Second Tab", String.valueOf(System.currentTimeMillis() + 1),
+				bundle);
 
 		Button addNewTab = (Button) findViewById(R.id.addNewTab);
 		addNewTab.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				// Log.i("Button", mTabHost.getCurrentTabTag()) ;
-				// removeTab(1);
-				// addNewTab("new tab");
+				String id = String.valueOf(System.currentTimeMillis() + 1);
+				Bundle bundle = new Bundle();
+				bundle.putString(EXTRA_URL, defaultUrl);
+				addTab(null, id, bundle);
+				mTabHost.setCurrentTabByTag(id);
+				
+				int position = mTabHost.getCurrentTab();
+				final TabWidget tabWidget = mTabHost.getTabWidget();
+				final int screenWidth = getWindowManager().getDefaultDisplay()
+						.getWidth();
+				final int leftX = tabWidget.getChildAt(position).getLeft();
+				int newX = 0;
+
+				newX = leftX + (tabWidget.getChildAt(position).getWidth() / 2)
+						- (screenWidth / 2);
+				if (newX < 0) {
+					newX = 0;
+				}
+				HorizontalScrollView scroll = (HorizontalScrollView) findViewById(R.id.horizontalScrollView1);
+				scroll.smoothScrollTo(newX, 0);
 			}
 		});
 
@@ -91,7 +105,8 @@ public class MasterActivity extends FragmentActivity implements
 
 			bundle = new Bundle();
 			bundle.putString(EXTRA_URL, uri.toString());
-			addTab(REDIRECT, bundle );
+			addTab(REDIRECT, String.valueOf(System.currentTimeMillis() + 1),
+					bundle);
 
 			mTabHost.setCurrentTabByTag(REDIRECT);
 
@@ -99,22 +114,40 @@ public class MasterActivity extends FragmentActivity implements
 
 	}
 
-	private void addTab(String tag, Bundle bundle) {
+	private void addTab(String tag, String id, Bundle bundle) {
 		// Attach a Tab view factory to the spec
-		TabHost.TabSpec tabSpec = mTabHost.newTabSpec(tag).setIndicator(
+		TabHost.TabSpec tabSpec = mTabHost.newTabSpec(id).setIndicator(
 				createTabView(tag));
 
-		mTabHost.addTab(tabSpec, WebTab.class, bundle,
-				onWebViewCreated);
+		mTabHost.addTab(tabSpec, WebTab.class, bundle, onWebViewCreated);
 	}
 
 	@Override
 	public void onTabChanged(String tabId) {
 
+		Point size = new Point();
+		getWindowManager().getDefaultDisplay().getSize(size);
+
+		TextView v = (TextView) mTabHost.getCurrentTabView().findViewById(
+				R.id.tab_text);
+
+		int[] pos = { 0, 0 };
+		v.getLocationInWindow(pos);
+		Log.e("currentTag", pos[0] + " | " + pos[1] + " | " + size + "");
+		if (pos[0] < 0) {
+			pos[0] = 0;
+		}
+
+		HorizontalScrollView scroll = (HorizontalScrollView) findViewById(R.id.horizontalScrollView1);
+//		scroll.smoothScrollTo(pos[0], 0);
 	}
 
 	public View createTabView(String text) {
+
 		View view = LayoutInflater.from(this).inflate(R.layout.tabs_icon, null);
+		if (text == null || "".equals(text)) {
+			return view;
+		}
 		TextView tv = (TextView) view.findViewById(R.id.tab_text);
 		tv.setText(text);
 		return view;
@@ -200,6 +233,7 @@ public class MasterActivity extends FragmentActivity implements
 
 		public void onViewChanged(MainWebView mainWebView) {
 			webView = mainWebView;
+
 		}
 	};
 	// Address Bar Listener
@@ -208,14 +242,15 @@ public class MasterActivity extends FragmentActivity implements
 		public boolean onEditorAction(TextView v, int keyCode, KeyEvent ev) {
 
 			if (ev != null && ev.getAction() == KeyEvent.ACTION_DOWN
-					&& ev.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+					&& ev.getKeyCode() == KeyEvent.KEYCODE_ENTER
+					&& webView != null) {
 
 				if (addressBar != null
 						&& !addressBar.getText().toString().equals("")) {
 					String address = addressBar.getText().toString();
-
-					if (address != null
-							&& address.equalsIgnoreCase(webView.getUrl())) {
+					String webUrl = webView.getUrl();
+					if (address != null && webUrl != null
+							&& address.equalsIgnoreCase(webUrl)) {
 						webView.reload();
 					} else if (URLUtil.isValidUrl(address)) {
 
@@ -230,10 +265,10 @@ public class MasterActivity extends FragmentActivity implements
 			return false;
 		}
 	};
-//	protected void onResume() {
-//		super.onResume();
-//		if(mTabHost.getCurrentTabTag().equals(REDIRECT)){
-//			mTabHost.setCurrentTab(-2);
-//		}
-//	}
+	// protected void onResume() {
+	// super.onResume();
+	// if(mTabHost.getCurrentTabTag().equals(REDIRECT)){
+	// mTabHost.setCurrentTab(-2);
+	// }
+	// }
 }

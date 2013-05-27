@@ -10,11 +10,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 public class WebTab extends Fragment {
 	private MainWebView webView;
 	WebTab.OnWebViewCreated onWebViewCreated;
-	
+	TextView title;
 	private boolean mIsWebViewAvailable;
 	String url;
 
@@ -44,33 +45,34 @@ public class WebTab extends Fragment {
 		webView.favicon = favicon;
 		webView.loading = loading;
 		webView.refresh = refresh;
-		
+		webView.title = title;
 		mIsWebViewAvailable = true;
 
 		if (onWebViewCreated != null) {
 			onWebViewCreated.onViewChanged(webView);
 		}
-		if (url != null)
+		Bundle b = getArguments();
+		if(b != null && b.get("history") !=null ){
+			webView.restoreState(b);
+		}else if(url != null)
 			webView.loadUrl(url);
 		
 		webView.requestFocus();
 		return webView;
 	}
 
-
-
 	@Override
 	public void onPause() {
-		super.onPause();
-		webView.saveState(getArguments());
+		Bundle b = getArguments();
+		webView.saveState(b);
 		webView.onPause();
+		super.onPause();
 	}
 
 	@Override
 	public void onResume() {
-		webView.restoreState(getArguments());
-		webView.onResume();
 		super.onResume();
+		webView.onResume();
 	}
 
 	@Override

@@ -14,6 +14,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TabHost;
+import android.widget.TextView;
 
 import com.yova.app.browser.honey.WebTab.OnWebViewCreated;
 
@@ -268,6 +269,7 @@ public class FragmentTabHost extends TabHost implements
 				ft.commit();
 			}
 		}
+
 		if (mOnTabChangeListener != null) {
 			mOnTabChangeListener.onTabChanged(tabId);
 		}
@@ -298,6 +300,8 @@ public class FragmentTabHost extends TabHost implements
 				if (newTab.fragment == null) {
 					newTab.fragment = Fragment.instantiate(mContext,
 							newTab.clss.getName(), newTab.args);
+					TextView tv =  (TextView)getCurrentTabView().findViewById(R.id.tab_text);
+					((WebTab)newTab.fragment).title = tv;
 					((WebTab)newTab.fragment).setOnWebViewCreated(newTab.onWebViewCreated);
 					ft.add(mContainerId, newTab.fragment, newTab.tag);
 				} else {
@@ -309,15 +313,11 @@ public class FragmentTabHost extends TabHost implements
 		}
 		return ft;
 	}
-
-	public MainWebView getCurrentWebView() {
-		if (mLastTab != null) {
-			MainWebView wv = ((WebTab) mLastTab.fragment).getWebview();
-			return wv;
-		} else {
-			return null;
+	OnClickListener tabClickListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			
 		}
-	}
-
-
+	};
 }

@@ -5,12 +5,16 @@
 
     <TextView
         android:id="@+id/tab_text"
-        android:layout_width="75dp"
+        android:layout_width="90dp"
         android:layout_height="30dp"
         android:textColor="#ffffff"
-        android:text="Default Text"
+        android:text="New Tab"
         android:paddingTop="5dp"
         android:paddingBottom="2dp"
         android:textSize="14sp"
+        android:gravity="center_vertical"
+        android:ellipsize="end"
+        android:scrollHorizontally="false"
+        android:maxLines="1"
     />
 </LinearLayout>

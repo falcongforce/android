@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 public class MainWebView extends WebView{
 	
@@ -27,6 +28,7 @@ public class MainWebView extends WebView{
 	ImageView favicon;
 	Button refresh;
 	ProgressBar loading;
+	TextView title;
 	
 	int originalOrientation;
 	private FrameLayout fullScreenContainer;
@@ -80,7 +82,7 @@ public class MainWebView extends WebView{
 			view.loadUrl(address);
 			return true;
 		}
-
+		
 		@Override
 		public void onPageStarted(WebView view, String url, Bitmap icon) {
 			addressBar.setText(url);
@@ -137,7 +139,13 @@ public class MainWebView extends WebView{
 			
 		}
 		
-		
+		@Override
+		public void onReceivedTitle(WebView view, String _title) {
+			super.onReceivedTitle(view, _title);
+			if(title != null){
+				title.setText(_title);
+			}
+		}
 	}
 
 }

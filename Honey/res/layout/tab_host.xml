@@ -18,21 +18,28 @@
                 android:id="@+id/horizontalScrollView1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
                 android:fillViewport="true"
                 android:scrollbars="none" >
 
-                <TabWidget
-                    android:id="@android:id/tabs"
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <TabWidget
+                        android:id="@android:id/tabs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
             </HorizontalScrollView>
 
             <Button
                 android:id="@+id/addNewTab"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="right"
                 android:text="+" />
         </LinearLayout>
 
@@ -74,10 +81,10 @@
                     android:layout_weight="1"
                     android:background="#FFFFFFFF"
                     android:ems="10"
+                    android:focusableInTouchMode="true"
                     android:imeOptions="actionGo"
                     android:inputType="textUri"
                     android:paddingLeft="5dp"
-                    android:focusableInTouchMode="true" 
                     android:selectAllOnFocus="true" >
                 </EditText>
 
