@@ -78,14 +78,26 @@ public class MainWebView extends WebView{
 	class MainWebViewClient extends WebViewClient{
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String address) {
-			addressBar.setText(address);
+			if(address.equals("file:///C:/Android/git/androidRepo/Honey/assets/newtab.html")){
+				
+				addressBar.setText("");
+			}else{
+				
+				addressBar.setText(address);
+			}
 			view.loadUrl(address);
 			return true;
 		}
 		
 		@Override
 		public void onPageStarted(WebView view, String url, Bitmap icon) {
-			addressBar.setText(url);
+			if(url.equals("file:///android_asset/newtab.html")){
+				
+				addressBar.setText("");
+			}else{
+				
+				addressBar.setText(url);
+			}
 			loading.setVisibility(ProgressBar.VISIBLE);
 			refresh.setVisibility(Button.GONE);
 			super.onPageStarted(view, url, icon);

@@ -41,6 +41,15 @@
                 android:layout_height="40dp"
                 android:layout_gravity="right"
                 android:text="+" />
+
+<!--             <Button
+                android:id="@+id/removeTab"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@android:drawable/btn_default_small"
+                android:gravity="center_vertical"
+                android:text="X"
+                android:visibility="visible" /> -->
         </LinearLayout>
 
         <LinearLayout

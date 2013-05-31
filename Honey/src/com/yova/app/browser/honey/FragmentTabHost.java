@@ -11,6 +11,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TabHost;
@@ -35,6 +37,9 @@ public class FragmentTabHost extends TabHost implements
 	private FragmentManager mFragmentManager;
 	private int mContainerId;
 	private TabHost.OnTabChangeListener mOnTabChangeListener;
+	private OnWebViewCreated onWebViewCreated;
+
+
 	private TabInfo mLastTab;
 	private boolean mAttached;
 
@@ -42,14 +47,12 @@ public class FragmentTabHost extends TabHost implements
 		private final String tag;
 		private final Class<?> clss;
 		private final Bundle args;
-		private final OnWebViewCreated onWebViewCreated;
 		private Fragment fragment;
 
-		TabInfo(String _tag, Class<?> _class, Bundle _args, OnWebViewCreated _onWebViewCreated) {
+		TabInfo(String _tag, Class<?> _class, Bundle _args) {
 			tag = _tag;
 			clss = _class;
 			args = _args;
-			onWebViewCreated = _onWebViewCreated;
 		}
 	}
 
@@ -71,7 +74,7 @@ public class FragmentTabHost extends TabHost implements
 
 	static class SavedState extends BaseSavedState {
 		String curTab;
-
+		String[] tabText;
 		SavedState(Parcelable superState) {
 			super(superState);
 		}
@@ -79,12 +82,14 @@ public class FragmentTabHost extends TabHost implements
 		private SavedState(Parcel in) {
 			super(in);
 			curTab = in.readString();
+			tabText = in.createStringArray();
 		}
 
 		@Override
 		public void writeToParcel(Parcel out, int flags) {
 			super.writeToParcel(out, flags);
 			out.writeString(curTab);
+			out.writeStringArray(tabText);
 		}
 
 		@Override
@@ -179,11 +184,11 @@ public class FragmentTabHost extends TabHost implements
 		mOnTabChangeListener = l;
 	}
 
-	public void addTab(TabHost.TabSpec tabSpec, Class<?> clss, Bundle args, OnWebViewCreated onWebViewCreated) {
+	public void addTab(TabHost.TabSpec tabSpec, Class<?> clss, Bundle args) {
 		tabSpec.setContent(new DummyTabFactory(mContext));
 		String tag = tabSpec.getTag();
 
-		TabInfo info = new TabInfo(tag, clss, args, onWebViewCreated);
+		TabInfo info = new TabInfo(tag, clss, args);
 
 		if (mAttached) {
 			// If we are already attached to the window, then check to make
@@ -196,11 +201,62 @@ public class FragmentTabHost extends TabHost implements
 				ft.commit();
 			}
 		}
-
+		
 		mTabs.add(info);
 		addTab(tabSpec);
 	}
+	private void reBuildTab(TabHost.TabSpec tabSpec, TabInfo info ) {
+		
+		tabSpec.setContent(new DummyTabFactory(mContext));
+		String tag = tabSpec.getTag();
+		
+		if (mAttached) {
+			// If we are already attached to the window, then check to make
+			// sure this tab's fragment is inactive if it exists. This shouldn't
+			// normally happen.
+			info.fragment = mFragmentManager.findFragmentByTag(tag);
+			if (info.fragment != null && !info.fragment.isDetached()) {
+				FragmentTransaction ft = mFragmentManager.beginTransaction();
+				ft.detach(info.fragment);
+				ft.commit();
+			}
+		}
+		
+		mTabs.add(info);
+		addTab(tabSpec);
+	}
+	public void removeCurrentTab(){
+		ArrayList<TabInfo> tempTabs = new ArrayList<TabInfo>();
+		int removeTab = getCurrentTab();
+		for(int x =0;x<mTabs.size();x++){
+			if(removeTab != x){
+				tempTabs.add(mTabs.get(x));
+			}
+		}
+		
+		clearAllTabs();
+		mTabs.clear();
+		
+		for (int i = 0; i < tempTabs.size(); i++) {
+			TabInfo info = tempTabs.get(i);
+			WebTab webtab =  (WebTab) info.fragment;
+			String tag = null; 
+			if(webtab != null && webtab.title != null){
+				tag = ((WebTab) info.fragment).title.getText().toString();
+			}
+			String id = info.tag;
+			TabHost.TabSpec tabSpec = newTabSpec(id).setIndicator(createTabView(tag));
 
+			reBuildTab(tabSpec, info);
+		}
+		if(tempTabs.size() == 0){
+			TabHost.TabSpec tabSpec = newTabSpec(String.valueOf(System.currentTimeMillis() + 1)).setIndicator(createTabView(null));
+			Bundle bundle = new Bundle();
+			addTab(tabSpec, WebTab.class, bundle);
+		}
+		setCurrentTab(mTabs.size()-1);
+		
+	}
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
@@ -251,12 +307,30 @@ public class FragmentTabHost extends TabHost implements
 		Parcelable superState = super.onSaveInstanceState();
 		SavedState ss = new SavedState(superState);
 		ss.curTab = getCurrentTabTag();
+		ss.tabText = new String[mTabs.size()];
+		for(int x =0;x<mTabs.size();x++){
+			ss.tabText[x]= (String)mTabs.get(x).tag;
+		}
+		
+		
 		return ss;
 	}
 
 	@Override
 	protected void onRestoreInstanceState(Parcelable state) {
 		SavedState ss = (SavedState) state;
+		String[] tabs = ss.tabText;
+		for(int x =0;x<tabs.length;x++){
+			String tabName = tabs[x];
+			Fragment f = mFragmentManager.findFragmentByTag(tabName);
+			TabInfo ti = new TabInfo(tabName, WebTab.class, f.getArguments());
+			ti.fragment = f;
+			
+			TabHost.TabSpec tabSpec = newTabSpec(tabName).setIndicator(createTabView(null));
+			tabSpec.setContent(new DummyTabFactory(mContext));
+			mTabs.add(ti);
+			addTab(tabSpec);
+		}
 		super.onRestoreInstanceState(ss.getSuperState());
 		setCurrentTabByTag(ss.curTab);
 	}
@@ -302,7 +376,8 @@ public class FragmentTabHost extends TabHost implements
 							newTab.clss.getName(), newTab.args);
 					TextView tv =  (TextView)getCurrentTabView().findViewById(R.id.tab_text);
 					((WebTab)newTab.fragment).title = tv;
-					((WebTab)newTab.fragment).setOnWebViewCreated(newTab.onWebViewCreated);
+					((WebTab)newTab.fragment).setOnWebViewCreated(onWebViewCreated);
+					
 					ft.add(mContainerId, newTab.fragment, newTab.tag);
 				} else {
 					ft.attach(newTab.fragment);
@@ -313,11 +388,45 @@ public class FragmentTabHost extends TabHost implements
 		}
 		return ft;
 	}
-	OnClickListener tabClickListener = new OnClickListener() {
+
+	public View createTabView(String text) {
+
+		View view = LayoutInflater.from(mContext).inflate(R.layout.tabs_icon, null);
+
+		view.setOnTouchListener(new OnTouchListener() {
+			boolean selected = false;
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if(event.getAction() == MotionEvent.ACTION_DOWN && v.isSelected()){
+					selected = v.isSelected();
+				}else if(event.getAction() == MotionEvent.ACTION_UP){
+					if(selected){
+						removeCurrentTab();
+						
+					}else{
+						selected = false;
+					}
+				}else if(event.getAction() == MotionEvent.ACTION_CANCEL){
+					selected = false;
+				}
+				return false;
+			}
+		});
 		
-		@Override
-		public void onClick(View v) {
-			
+		
+		if (text == null || "".equals(text)) {
+			return view;
 		}
-	};
+		TextView tv = (TextView) view.findViewById(R.id.tab_text);
+
+		tv.setText(text);
+		return view;
+	}
+	public OnWebViewCreated getOnWebViewCreated() {
+		return onWebViewCreated;
+	}
+
+	public void setOnWebViewCreated(OnWebViewCreated onWebViewCreated) {
+		this.onWebViewCreated = onWebViewCreated;
+	}
 }

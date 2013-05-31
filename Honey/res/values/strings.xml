@@ -9,5 +9,6 @@
     <string name="button_back">&lt;</string>
     <string name="button_refresh">Q</string>
     <string name="icon">favicon</string>
+    <string name="newTabText">New Tab</string>
 
 </resources>
