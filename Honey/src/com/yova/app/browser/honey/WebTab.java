@@ -13,19 +13,20 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class WebTab extends Fragment {
-	private MainWebView webView;
+	MainWebView webView;
 	WebTab.OnWebViewCreated onWebViewCreated;
 	TextView title;
 	private boolean mIsWebViewAvailable;
 	String url;
-
+	String savedTitle;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Bundle b = getArguments();
-		if (b != null)
+		if (b != null){
+			savedTitle= b.getString("title");
 			url = b.getString(MasterActivity.EXTRA_URL);
-
+		}
 	}
 
 	@Override
@@ -48,11 +49,17 @@ public class WebTab extends Fragment {
 		webView.title = title;
 		mIsWebViewAvailable = true;
 
+		if(onWebViewCreated == null){
+			MasterActivity ma = (MasterActivity) getActivity();
+			onWebViewCreated = ma.onWebViewCreated;	
+		}
+		
 		if (onWebViewCreated != null) {
 			onWebViewCreated.onViewChanged(webView);
 		}
 		Bundle b = getArguments();
 		if(b != null && b.get("history") !=null ){
+
 			webView.restoreState(b);
 		}else if(url != null)
 			webView.loadUrl(url);
@@ -64,6 +71,9 @@ public class WebTab extends Fragment {
 	@Override
 	public void onPause() {
 		Bundle b = getArguments();
+		if(title!= null){
+			b.putString("title", title.getText().toString());
+		}
 		webView.saveState(b);
 		webView.onPause();
 		super.onPause();

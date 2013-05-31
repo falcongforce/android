@@ -118,12 +118,18 @@ public class MasterActivity extends FragmentActivity implements
 		super.onResumeFragments();
 	}
 	@Override
+	protected void onResume() {
+		super.onResume();
+//		positionTabs();
+	}
+	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 	}
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
+		
 	}
 	private void addTab(String tag, String id, Bundle bundle) {
 		// Attach a Tab view factory to the spec
@@ -266,11 +272,14 @@ public class MasterActivity extends FragmentActivity implements
 		
 		final int screenWidth = point.x;
 		
-		final int leftX = tabWidget.getChildAt(position).getLeft();
+		View selected = tabWidget.getChildAt(position);
 		int newX = 0;
-
-		newX = leftX + (tabWidget.getChildAt(position).getWidth() / 2)
-				- (screenWidth / 2);
+		int leftX = 0;
+		if(selected != null){
+			leftX = selected.getLeft();
+			newX = leftX + (selected.getWidth() / 2)
+					- (screenWidth / 2);
+		}
 		if (newX < 0) {
 			newX = 0;
 		}

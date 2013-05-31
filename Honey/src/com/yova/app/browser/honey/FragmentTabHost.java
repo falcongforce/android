@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -15,7 +16,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.TabHost;
+import android.widget.TabWidget;
 import android.widget.TextView;
 
 import com.yova.app.browser.honey.WebTab.OnWebViewCreated;
@@ -226,6 +229,9 @@ public class FragmentTabHost extends TabHost implements
 		addTab(tabSpec);
 	}
 	public void removeCurrentTab(){
+		if(mTabs.size() == 1){
+			return;
+		}
 		ArrayList<TabInfo> tempTabs = new ArrayList<TabInfo>();
 		int removeTab = getCurrentTab();
 		for(int x =0;x<mTabs.size();x++){
@@ -249,11 +255,11 @@ public class FragmentTabHost extends TabHost implements
 
 			reBuildTab(tabSpec, info);
 		}
-		if(tempTabs.size() == 0){
-			TabHost.TabSpec tabSpec = newTabSpec(String.valueOf(System.currentTimeMillis() + 1)).setIndicator(createTabView(null));
-			Bundle bundle = new Bundle();
-			addTab(tabSpec, WebTab.class, bundle);
-		}
+//		if(tempTabs.size() == 0){
+//			TabHost.TabSpec tabSpec = newTabSpec(String.valueOf(System.currentTimeMillis() + 1)).setIndicator(createTabView(null));
+//			Bundle bundle = new Bundle();
+//			addTab(tabSpec, WebTab.class, bundle);
+//		}
 		setCurrentTab(mTabs.size()-1);
 		
 	}
@@ -325,14 +331,33 @@ public class FragmentTabHost extends TabHost implements
 			Fragment f = mFragmentManager.findFragmentByTag(tabName);
 			TabInfo ti = new TabInfo(tabName, WebTab.class, f.getArguments());
 			ti.fragment = f;
-			
-			TabHost.TabSpec tabSpec = newTabSpec(tabName).setIndicator(createTabView(null));
+			String title = null;
+			WebTab tw = null;
+			if(f!=null){
+				tw =((WebTab)f);
+				tw.setOnWebViewCreated(onWebViewCreated);
+				if(tw.savedTitle != null){
+					title = tw.savedTitle;
+				}
+			}
+			View tabView = createTabView(title);
+			TextView tv = (TextView) tabView.findViewById(R.id.tab_text);
+			if(tw != null){
+				//for current tab
+				if(tw.webView != null){
+					tw.webView.title =tv;
+				}
+				//for when the tab is changed
+				tw.title = tv;
+			}
+			TabHost.TabSpec tabSpec = newTabSpec(tabName).setIndicator(tabView);
 			tabSpec.setContent(new DummyTabFactory(mContext));
 			mTabs.add(ti);
 			addTab(tabSpec);
 		}
 		super.onRestoreInstanceState(ss.getSuperState());
 		setCurrentTabByTag(ss.curTab);
+//		positionTabs();
 	}
 
 	@Override
@@ -402,7 +427,7 @@ public class FragmentTabHost extends TabHost implements
 				}else if(event.getAction() == MotionEvent.ACTION_UP){
 					if(selected){
 						removeCurrentTab();
-						
+						selected = false;
 					}else{
 						selected = false;
 					}
@@ -428,5 +453,27 @@ public class FragmentTabHost extends TabHost implements
 
 	public void setOnWebViewCreated(OnWebViewCreated onWebViewCreated) {
 		this.onWebViewCreated = onWebViewCreated;
+	}
+	public void positionTabs(){
+		Point point = new Point();
+		int position = getCurrentTab();
+		final TabWidget tabWidget = getTabWidget();
+		((MasterActivity)mContext).getWindowManager().getDefaultDisplay().getSize(point);
+		
+		final int screenWidth = point.x;
+		
+		View selected = tabWidget.getChildAt(position);
+		int newX = 0;
+		int leftX = 0;
+		if(selected != null){
+			leftX = selected.getLeft();
+			newX = leftX + (selected.getWidth() / 2)
+					- (screenWidth / 2);
+		}
+		if (newX < 0) {
+			newX = 0;
+		}
+		HorizontalScrollView scroll = (HorizontalScrollView) findViewById(R.id.horizontalScrollView1);
+		scroll.smoothScrollTo(newX, 0);
 	}
 }
