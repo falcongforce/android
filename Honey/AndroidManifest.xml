@@ -39,15 +39,16 @@
             android:name="com.yova.app.browser.honey.SettingsActivity"
             android:label="Settings"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Holo" 
             android:parentActivityName="com.yova.app.browser.honey.MasterActivity"
-            >
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Holo" >
             <meta-data
-            android:name="android.support.PARENT_ACTIVITY"
-            android:value="com.yova.app.browser.honey.MasterActivity" />
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.yova.app.browser.honey.MasterActivity" />
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

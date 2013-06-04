@@ -4,11 +4,8 @@
     <string name="app_name">Honey</string>
     <string name="action_settings">Settings</string>
     <string name="action_bookmarks">Bookmarks</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="button_go">GO</string>
-    <string name="button_forward">&gt;</string>
-    <string name="button_back">&lt;</string>
-    <string name="button_refresh">Q</string>
+
+    <string name="button_new_tab">+</string> 
     <string name="icon">favicon</string>
     <string name="newTabText">New Tab</string>
 
