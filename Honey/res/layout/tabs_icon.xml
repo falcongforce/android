@@ -9,25 +9,17 @@
     <TextView
         android:id="@+id/tab_text"
         android:layout_width="90dp"
-        android:layout_height="30dp"
+        android:layout_height="20dp"
         android:clickable="false"
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:maxLines="1"
-        android:paddingBottom="2dp"
-        android:paddingTop="5dp"
+        android:paddingBottom="1dp"
+        android:paddingTop="1dp"
         android:scrollHorizontally="false"
-        android:text="@string/newTabText" 
-        android:textColor="#ffffff" 
+        android:text="@string/newTabText"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="#ffffff"
         android:textSize="14sp" />
-
-<!--     <Button
-        android:id="@+id/removeTab"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:background="@android:drawable/btn_default_small"
-        android:gravity="center_vertical"
-        android:text="X"
-        android:visibility="visible" /> -->
 
 </LinearLayout>

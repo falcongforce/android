@@ -245,15 +245,28 @@ public class FragmentTabHost extends TabHost implements
 		
 		for (int i = 0; i < tempTabs.size(); i++) {
 			TabInfo info = tempTabs.get(i);
+			String id = info.tag;
 			WebTab webtab =  (WebTab) info.fragment;
 			String tag = null; 
 			if(webtab != null && webtab.title != null){
 				tag = ((WebTab) info.fragment).title.getText().toString();
 			}
-			String id = info.tag;
-			TabHost.TabSpec tabSpec = newTabSpec(id).setIndicator(createTabView(tag));
+			
+			View tabView = createTabView(tag);
+			TextView tv = (TextView) tabView.findViewById(R.id.tab_text);
+			if(webtab != null){
+				//for current tab
+				if(webtab.webView != null){
+					webtab.webView.title =tv;
+				}
+				//for when the tab is changed
+				webtab.title = tv;
+			}
+			
+			TabHost.TabSpec tabSpec = newTabSpec(id).setIndicator(tabView);
 
 			reBuildTab(tabSpec, info);
+			
 		}
 //		if(tempTabs.size() == 0){
 //			TabHost.TabSpec tabSpec = newTabSpec(String.valueOf(System.currentTimeMillis() + 1)).setIndicator(createTabView(null));

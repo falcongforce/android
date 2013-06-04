@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="webZoom">
+        <item >50% Far Out</item>
+        <item >100% Normal</item>
+        <item >200% Close In</item>
+    </string-array>
+    <string-array name="webZoomValues">
+        <item >FAR</item>
+        <item >MEDIUM</item>
+        <item >CLOSE</item>
+    </string-array>
+</resources>

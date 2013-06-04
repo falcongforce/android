@@ -2,15 +2,20 @@ package com.yova.app.browser.honey;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebSettings.PluginState;
+import android.webkit.WebSettings.ZoomDensity;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -20,8 +25,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class MainWebView extends WebView{
-	
+public class MainWebView extends WebView {
+	final String CLASS_NAME = MainWebView.class.getSimpleName();
 	MainWebChromeClient mainWebChromeClient; 
 	
 	EditText addressBar;
@@ -53,16 +58,16 @@ public class MainWebView extends WebView{
 	}
 	
 	private void init(Context context){
-		
 		activity = (Activity) context;
 		
 		
         WebSettings webSettings = getSettings();
-        webSettings.setJavaScriptEnabled(true);
+        webSettings.setJavaScriptEnabled(MasterActivity.checkJavascript);
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setUseWideViewPort(true); 
         webSettings.setBuiltInZoomControls(true);
         webSettings.setDisplayZoomControls(false);
+        webSettings.setDefaultZoom(getZoomLevel());
         webSettings.setLayoutAlgorithm(LayoutAlgorithm.NORMAL);
         webSettings.setPluginState(PluginState.ON);
         webSettings.setDomStorageEnabled(true);
@@ -73,7 +78,15 @@ public class MainWebView extends WebView{
        
         setWebViewClient(new MainWebViewClient());
 	}
-	
+	public ZoomDensity getZoomLevel(){
+		if(MasterActivity.checkDefaultZoom.equals("CLOSE")){
+			return ZoomDensity.CLOSE;
+		}else if(MasterActivity.checkDefaultZoom.equals("MEDIUM")){
+			return ZoomDensity.MEDIUM;
+		}
+		else
+			return ZoomDensity.FAR;
+	}
 	
 	class MainWebViewClient extends WebViewClient{
 		@Override
@@ -160,4 +173,15 @@ public class MainWebView extends WebView{
 		}
 	}
 
+	@Override
+	protected void onCreateContextMenu(ContextMenu menu) {
+		super.onCreateContextMenu(menu);
+		HitTestResult result = getHitTestResult();
+		
+		if(result.getType() == HitTestResult.SRC_ANCHOR_TYPE){
+			Log.e(CLASS_NAME, result.getExtra());
+			Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(result.getExtra()));
+			getContext().startActivity(intent);
+		}
+	}
 }

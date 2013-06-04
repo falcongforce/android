@@ -3,6 +3,7 @@
 
     <string name="app_name">Honey</string>
     <string name="action_settings">Settings</string>
+    <string name="action_bookmarks">Bookmarks</string>
     <string name="hello_world">Hello world!</string>
     <string name="button_go">GO</string>
     <string name="button_forward">&gt;</string>

@@ -1,12 +1,19 @@
 package com.yova.app.browser.honey;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,7 +35,9 @@ import com.yova.app.browser.honey.WebTab.OnWebViewCreated;
 
 public class MasterActivity extends FragmentActivity implements
 		OnClickListener, TabHost.OnTabChangeListener {
-
+	final String CLASS_NAME = MasterActivity.class.getSimpleName();
+	static boolean checkJavascript;
+	static String checkDefaultZoom;
 	private FragmentTabHost mTabHost;
 	private MainWebView webView;
 	EditText addressBar;
@@ -42,10 +51,18 @@ public class MasterActivity extends FragmentActivity implements
 	Button back;
 	Button forward;
 	Button refresh;
-	
+	HorizontalScrollView scroll;
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.e("MasterActivity", "OnCreate");
+		
+		
 		setContentView(R.layout.tab_host);
+		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+		MasterActivity.checkDefaultZoom = prefs.getString("defaultZoom", "FAR");
+		MasterActivity.checkJavascript = prefs.getBoolean("enableJavaScript", true);
+		
 		// hide keyboard
 		this.getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -60,11 +77,8 @@ public class MasterActivity extends FragmentActivity implements
 				android.R.id.tabcontent);
 		mTabHost.setOnTabChangedListener(this);
 		mTabHost.setOnWebViewCreated(onWebViewCreated);
+		scroll = (HorizontalScrollView) findViewById(R.id.horizontalScrollView1);
 		
-
-
-
-
 		Button addNewTab = (Button) findViewById(R.id.addNewTab);
 		addNewTab.setOnClickListener(new OnClickListener() {
 
@@ -79,27 +93,58 @@ public class MasterActivity extends FragmentActivity implements
 			}
 		});
 		
-		Intent intent = getIntent();
+		Intent intent = getIntent(); 
 		if(savedInstanceState == null){
 			if(intent == null || intent.getData() == null){
 				Bundle bundle = new Bundle();
 				bundle.putString(EXTRA_URL, defaultUrl);
 				addTab(null, String.valueOf(System.currentTimeMillis() + 1), bundle);
 			}
-			else{
-				loadIntent(intent);
-			}
-		}else{ 
-			//load data from bundle then load intent if intent is not null
-			if(intent != null && intent.getData() != null){
-				loadIntent(intent);
-			}
+
 		}
 		
+	}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.main, menu);
+		return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		   // Handle item selection
+	    switch (item.getItemId()) {
+	        case R.id.action_settings:
+	        	
+	        	Intent i = new Intent(this, SettingsActivity.class);
+	            startActivityForResult(i, 1);
+	            
+	            Log.e(CLASS_NAME, "action_settings");
+	            return true;
+	        case R.id.action_bookmarks:
+	        	Log.e(CLASS_NAME, "action_bookmarks");
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
 		
 	}
-	
-	public void loadIntent(Intent intent){
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		return super.onMenuItemSelected(featureId, item);
+	}
+	@Override
+	public boolean onMenuOpened(int featureId, Menu menu) {
+		return super.onMenuOpened(featureId, menu);
+	}
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		if(intent != null && intent.getData() != null){
 			Uri uri = null;
 			uri = intent.getData();
 			String id = String.valueOf(System.currentTimeMillis() + 1);
@@ -108,7 +153,10 @@ public class MasterActivity extends FragmentActivity implements
 			addTab(null, id, bundleIntent);
 
 			mTabHost.setCurrentTabByTag(id);
+			delayedPositionTabs();
+		}
 	}
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -120,7 +168,6 @@ public class MasterActivity extends FragmentActivity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-//		positionTabs();
 	}
 	@Override
 	protected void onDestroy() {
@@ -129,7 +176,21 @@ public class MasterActivity extends FragmentActivity implements
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		
+		delayedPositionTabs();
+	}
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		delayedPositionTabs();
+	}
+	
+	public void delayedPositionTabs(){
+		scroll.postDelayed(new Runnable() {            
+		    @Override
+		    public void run() {
+		    	positionTabs();
+		    }
+		}, 500);
 	}
 	private void addTab(String tag, String id, Bundle bundle) {
 		// Attach a Tab view factory to the spec
@@ -144,7 +205,7 @@ public class MasterActivity extends FragmentActivity implements
 		
 		
 	}
-
+	
 	public View createTabView(String text) {
 
 		View view = LayoutInflater.from(this).inflate(R.layout.tabs_icon, null);
@@ -261,6 +322,7 @@ public class MasterActivity extends FragmentActivity implements
 
 		public void onViewChanged(MainWebView mainWebView) {
 			webView = mainWebView;
+			registerForContextMenu(mainWebView);
 			positionTabs();
 		}
 	};
@@ -283,8 +345,8 @@ public class MasterActivity extends FragmentActivity implements
 		if (newX < 0) {
 			newX = 0;
 		}
-		HorizontalScrollView scroll = (HorizontalScrollView) findViewById(R.id.horizontalScrollView1);
 		scroll.smoothScrollTo(newX, 0);
+		
 	}
 	// Address Bar Listener
 	OnEditorActionListener onEditListen = new OnEditorActionListener() {

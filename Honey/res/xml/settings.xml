@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Content" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enableJavaScript"
+            android:summary="Allow sites to run JavaScript"
+            android:title="Enable Javascript" >
+        </CheckBoxPreference>
+ 		<ListPreference 
+ 		    android:key="defaultZoom"
+ 		    android:title="Default Zoom"
+ 		    android:summary="Zoom"
+ 		    android:entries="@array/webZoom"
+ 		    android:entryValues="@array/webZoomValues"
+ 		    />
+    </PreferenceCategory>
+
+</PreferenceScreen>
