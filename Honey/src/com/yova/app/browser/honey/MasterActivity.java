@@ -100,6 +100,9 @@ public class MasterActivity extends FragmentActivity implements
 				bundle.putString(EXTRA_URL, defaultUrl);
 				addTab(null, String.valueOf(System.currentTimeMillis() + 1), bundle);
 			}
+			else{
+				onNewIntent(intent);
+			}
 
 		}
 		
@@ -143,7 +146,6 @@ public class MasterActivity extends FragmentActivity implements
 	}
 	@Override
 	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
 		if(intent != null && intent.getData() != null){
 			Uri uri = null;
 			uri = intent.getData();
