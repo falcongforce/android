@@ -5,6 +5,10 @@
         android:showAsAction="ifRoom"
         android:title="@string/action_bookmarks"/>
     <item
+        android:id="@+id/action_find"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_find"/>
+    <item
         android:id="@+id/action_settings"
         android:showAsAction="ifRoom"
         android:title="@string/action_settings"/>

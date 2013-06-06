@@ -127,6 +127,11 @@ public class MasterActivity extends FragmentActivity implements
 	        case R.id.action_bookmarks:
 	        	Log.e(CLASS_NAME, "action_bookmarks");
 	            return true;
+	        case R.id.action_find:
+	        	if(webView != null && webView.isPageFinishedLoading()){
+	        		webView.showFindDialog("", false);
+	        	}
+	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
@@ -194,7 +199,7 @@ public class MasterActivity extends FragmentActivity implements
 		    }
 		}, 500);
 	}
-	private void addTab(String tag, String id, Bundle bundle) {
+	public void addTab(String tag, String id, Bundle bundle) {
 		// Attach a Tab view factory to the spec
 		TabHost.TabSpec tabSpec = mTabHost.newTabSpec(id).setIndicator(
 				createTabView(tag));
@@ -207,7 +212,11 @@ public class MasterActivity extends FragmentActivity implements
 		
 		
 	}
-	
+	public void setCurrentTab(String tabId){
+		if(mTabHost != null){
+			mTabHost.setCurrentTabByTag(tabId);
+		}
+	}
 	public View createTabView(String text) {
 
 		View view = LayoutInflater.from(this).inflate(R.layout.tabs_icon, null);

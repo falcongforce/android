@@ -75,14 +75,14 @@ public class WebTab extends Fragment {
 			b.putString("title", title.getText().toString());
 		}
 		webView.saveState(b);
-		webView.onPause();
+//		webView.onPause();
 		super.onPause();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		webView.onResume();
+//		webView.onResume();
 	}
 
 	@Override
